@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "compile",
+      "command": "if [ ! -d ${workspaceFolder}/executables/${relativeFileDirname} ]; then mkdir -p ${workspaceFolder}/executables/${relativeFileDirname}; fi && gcc ${file} -o ${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out -Wall -std=c99 -lm",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "type": "shell",
+      "label": "run",
+      "command": "${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out",
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "dependsOn": ["compile"]
+    },
+    {
+      "type": "shell",
+      "label": "clean",
+      "command": "rm ${workspaceFolder}/executables"
+    }
+  ],
+  "version": "2.0.0"
+}
