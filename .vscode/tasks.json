@@ -3,8 +3,16 @@
     {
       "type": "shell",
       "label": "compile",
-      "command": "if [ ! -d ${workspaceFolder}/executables/${relativeFileDirname} ]; then mkdir -p ${workspaceFolder}/executables/${relativeFileDirname}; fi && gcc ${file} -o ${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out -Wall -std=c99 -lm",
-      "problemMatcher": ["$gcc"]
+      "command": "gcc ${file} -o ${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out -Wall -std=c99 -lm",
+      "problemMatcher": ["$gcc"],
+      "dependsOn": ["makedir"]
+    },
+    {
+      "type": "shell",
+      "label": "compile debug",
+      "command": "gcc ${file} -o ${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out -Wall -std=c99 -lm -g",
+      "problemMatcher": ["$gcc"],
+      "dependsOn": ["makedir"]
     },
     {
       "type": "shell",
@@ -19,6 +27,12 @@
       "type": "shell",
       "label": "clean",
       "command": "rm ${workspaceFolder}/executables"
+    },
+    {
+      "type": "shell",
+      "label": "makedir",
+      "command": "if [ ! -d ${workspaceFolder}/executables/${relativeFileDirname} ]; then mkdir -p ${workspaceFolder}/executables/${relativeFileDirname}; fi",
+      "hide": true
     }
   ],
   "version": "2.0.0"
