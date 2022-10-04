@@ -5,7 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "디버그",
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "디버그 C",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out",
@@ -16,7 +24,21 @@
       "externalConsole": false,
       "MIMode": "gdb",
 
-      "preLaunchTask": "compile debug"
+      "preLaunchTask": "compile debug C"
+    },
+    {
+      "name": "디버그 C++",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+
+      "preLaunchTask": "compile debug C++"
     }
   ]
 }
