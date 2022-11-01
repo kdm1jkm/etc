@@ -5,23 +5,23 @@
 typedef struct _pos
 {
     char a, b;
-} pos;
+} Pos;
 
-bool isValid(pos a, pos b)
+bool isValid(Pos a, Pos b)
 {
     int deltaX = a.a - b.a;
     int deltaY = a.b - b.b;
     return (deltaX * deltaX + deltaY * deltaY) == 5;
 }
 
-bool *getMoved(bool *moved, pos p)
+bool *getMoved(bool *moved, Pos p)
 {
     return &moved[(p.a - 'A') + 6 * (p.b - '1')];
 }
 
 int main()
 {
-    pos prevPos, startPos;
+    Pos prevPos, startPos;
     scanf("%c%c", &prevPos.a, &prevPos.b);
     startPos = prevPos;
 
@@ -31,7 +31,7 @@ int main()
 
     for (int i = 0; i < 35; i++)
     {
-        pos currentPos;
+        Pos currentPos;
         scanf(" %c%c", &currentPos.a, &currentPos.b);
         if (!isValid(prevPos, currentPos) || *getMoved(moved, currentPos))
         {
