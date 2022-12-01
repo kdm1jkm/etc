@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct
+int getRoot(int *arr, int num)
 {
-    int index, value;
-} Pair;
+    if (arr[num] == num)
+        return num;
 
-int compare(const void *a, const void *b)
+    return arr[num] = getRoot(arr, arr[num]);
+}
+
+void merge(int *arr, int num1, int num2)
 {
-    int result = ((Pair *)a)->value - ((Pair *)b)->value;
-    if (result != 0)
-        return result;
-    return (((Pair *)a)->index - ((Pair *)b)->index);
+    arr[getRoot(arr, num2)] = getRoot(arr, num1);
 }
 
 int main()
@@ -20,33 +20,34 @@ int main()
     scanf("%d", &g);
     scanf("%d", &p);
 
-    Pair *arr = (Pair *)malloc(sizeof(Pair) * p);
+    int *arr = (int *)malloc(sizeof(int) * p);
+    for (int i = 0; i < p; i++)
+        scanf("%d", arr + i);
+
+    int *arr2 = (int *)malloc(sizeof(int) * (g + 1));
+    for (int i = 0; i < g + 1; i++)
+        arr2[i] = i;
+
+    int count = 0;
+
     for (int i = 0; i < p; i++)
     {
-        scanf("%d", &arr[i].a);
-        arr[i].b = i + 1;
-    }
-
-    qsort(arr, p, sizeof(Pair), compare);
-
-    int count = p;
-    int capacity = 0;
-
-    int prev = 0;
-    for (int i = 0; i < p; i++)
-    {
-        capacity += arr[i].a - prev;
-
-        if (capacity <= 0)
-        {
-            count = arr[i].b;
+        int root = getRoot(arr2, arr[i]);
+        if (root == 0)
             break;
-        }
-        else
-            capacity -= 1;
 
-        prev = arr[i].a;
+        count++;
+        merge(arr2, root - 1, root);
     }
 
     printf("%d\n", count);
+
+    free(arr);
+    free(arr2);
 }
+
+/*
+
+Union Find!!!!!!!!!!!!!!
+
+*/

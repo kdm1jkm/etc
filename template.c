@@ -4,7 +4,7 @@
 
 typedef struct _pos Pos;
 
-typedef char MAP_TYPE;
+typedef int MAP_TYPE;
 typedef int LIST_TYPE;
 typedef Pos QUEUE_TYPE;
 
@@ -80,7 +80,7 @@ Map *mapClone(Map *originalMap)
 {
     Map *map = newMap(originalMap->row, originalMap->column);
     for (int i = 0; i < map->row * map->column; i++)
-        map->data[0] = originalMap->data[0];
+        map->data[i] = originalMap->data[i];
     return map;
 }
 
@@ -90,12 +90,11 @@ void freeMap(Map *map)
     free(map);
 }
 
-const Pos directions[4] = {
-    {.row = 0, .column = 1},
-    {.row = -1, .column = 0},
-    {.row = 0, .column = -1},
-    {.row = 1, .column = 0},
-};
+void fillMap(Map *map, MAP_TYPE element)
+{
+    for (int i = 0; i < map->row * map->column; i++)
+        map->data[i] = element;
+}
 
 Pos indexToPos(Map *map, int index)
 {
@@ -207,7 +206,7 @@ void sortList(ArrayList *arrayList, int compare(const void *, const void *))
     qsort(arrayList->data, arrayList->size, sizeof(LIST_TYPE), compare);
 }
 
-void *getListElement(ArrayList *arrayList, size_t index)
+LIST_TYPE *getListElement(ArrayList *arrayList, size_t index)
 {
     return &arrayList->data[index];
 }
@@ -224,17 +223,13 @@ bool resetListCapacity(ArrayList *arrayList, size_t capacity)
     return true;
 }
 
-bool listAppend(ArrayList *arrayList, void *element)
+bool listAppend(ArrayList *arrayList, LIST_TYPE element)
 {
     if (arrayList->size == arrayList->capacity)
         if (!resetListCapacity(arrayList, arrayList->capacity * 2))
             return false;
 
-    char *ptr = getListElement(arrayList, arrayList->size++);
-    for (int i = 0; i < sizeof(LIST_TYPE); ++i)
-    {
-        ptr[i] = ((char *)element)[i];
-    }
+    *getListElement(arrayList, arrayList->size++) = element;
 
     return true;
 }
@@ -254,7 +249,9 @@ void printElementAsInteger(int a)
 
 void printMap(Map *map, void (*printElement)(MAP_TYPE))
 {
+#ifdef ONLINE_JUDGE
     return;
+#endif
     puts("--------------");
     for (int row = 0; row < map->row; row++)
     {
@@ -266,11 +263,26 @@ void printMap(Map *map, void (*printElement)(MAP_TYPE))
 }
 
 //**************************************************************************
-//                                  Main
+//                                  Util
 
-int main()
+int max(int a, int b)
 {
-    printf("Hello, World!");
-
-    return 0;
+    return a > b ? a : b;
 }
+
+int abs(int a)
+{
+    return a > 0 ? a : -a;
+}
+
+int min(int a, int b)
+{
+    return a < b ? a : b;
+}
+
+const Pos directions[4] = {
+    {.row = 0, .column = 1},
+    {.row = -1, .column = 0},
+    {.row = 0, .column = -1},
+    {.row = 1, .column = 0},
+};
