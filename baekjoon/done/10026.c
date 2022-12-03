@@ -4,7 +4,7 @@
 
 typedef struct _pos Pos;
 
-typedef int MAP_TYPE;
+typedef char MAP_TYPE;
 typedef int LIST_TYPE;
 typedef Pos QUEUE_TYPE;
 
@@ -291,9 +291,71 @@ const Pos directions[4] = {
 //**************************************************************************
 //                                 Main
 
+int fill(Map *map, Pos startPos)
+{
+    char startChar = *getElement(map, startPos);
+
+    if (startChar == ' ')
+        return 0;
+
+    *getElement(map, startPos) = ' ';
+
+    Queue *queue = newQueue();
+    enqueue(queue, startPos);
+
+    int result = 1;
+    while (queue->length > 0)
+    {
+        Pos pos = dequeue(queue);
+
+        for (int i = 0; i < 4; i++)
+        {
+            Pos nextPos = addPos(pos, directions[i]);
+            if (!checkRange(map, nextPos))
+                continue;
+            if (*getElement(map, nextPos) != startChar)
+                continue;
+
+            enqueue(queue, nextPos);
+            *getElement(map, nextPos) = ' ';
+            result++;
+        }
+    }
+
+    freeQueue(queue);
+    return result;
+}
+
 int main()
 {
-    printf("Hello, World!\n");
+    int n;
+    scanf("%d", &n);
+    Map *map = newMap(n, n);
+    for (int i = 0; i < n * n; i++)
+        scanf(" %c", &map->data[i]);
 
-    return 0;
+    Map *RGMap = mapClone(map);
+    for (int i = 0; i < n * n; i++)
+        if (RGMap->data[i] == 'R')
+            RGMap->data[i] = 'G';
+
+    int count1 = 0;
+    int count2 = 0;
+
+    for (int row = 0; row < n; row++)
+    {
+        for (int column = 0; column < n; column++)
+        {
+            if (fill(map, (Pos){row, column}) != 0)
+                count1++;
+            if (fill(RGMap, (Pos){row, column}) != 0)
+                count2++;
+            printMap(map, putchar);
+        }
+    }
+
+    printf("%d %d\n", count1, count2);
+
+    freeMap(map);
+    freeMap(RGMap);
 }
