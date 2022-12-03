@@ -93,8 +93,13 @@ def calc_best(
     if max_vector is None:
         max_vector = calc_min_quantities(criteria, A)
 
+    original = min_vector.copy(), max_vector.copy()
+
     min_vector = np.maximum(np.zeros((A.shape[1])), min_vector)
     max_vector = np.minimum(calc_min_quantities(criteria, A), max_vector)
+
+    if np.any(max_vector < min_vector):
+        max_vector = np.maximum(min_vector, max_vector)
 
     startVector = min_vector.copy()
     endVector = max_vector.copy()
@@ -206,9 +211,9 @@ def main():
 
     comb = int(input("Enter the number of foods to be seleted: "))
 
-    best_vectors = []
-    combs = list(combinations(range(food_count), comb))
-    for indexes in combs:
+    for indexes in combinations(range(food_count), comb):
+        print("-" * 50)
+
         best_vector = calc_best(
             A[:, indexes],  # type: ignore
             criteria,
@@ -217,24 +222,16 @@ def main():
             min_foods.take(indexes),
             max_foods.take(indexes),
         )
-        if best_vector is not None:
-            best_vectors.append(best_vector)
-    best_vectors = np.column_stack(best_vectors)
 
-    if len(best_vectors) == 0:
-        print("Impossible in given condition")
-        return
+        if best_vector is None:
+            continue
 
-    best_index = np.argmin(best_vectors[-1, :])
-
-    best_vector = best_vectors[:, best_index]
-
-    for i, food in enumerate(best_vector):
-        print(f"Food#{combs[best_index][i]+1}: {food}")
-    best_result = A[:, combs[best_index]] @ best_vector  # type: ignore
-    print(f"Total calories: {best_result[0]}")
-    print(f"Total nutrients: {best_result[1]}")
-    print(f"Total tb: {best_result[2]}")
+        for i, index in enumerate(indexes):
+            print(f"Food#{index + 1}: {best_vector[i]}")
+        best_result = A[:, indexes] @ best_vector  # type: ignore
+        print(f"Total calories: {best_result[0]}")
+        print(f"Total nutrients: {best_result[1]}")
+        print(f"Total tb: {best_result[2]}")
 
 
 if __name__ == "__main__":
