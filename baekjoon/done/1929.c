@@ -287,3 +287,42 @@ const Pos directions[4] = {
     {.row = 0, .column = -1},
     {.row = 1, .column = 0},
 };
+
+#include <math.h>
+
+bool isPrime(ArrayList *primes, int n)
+{
+    int criteria = sqrt(n);
+    for (int i = 0; i < primes->size; i++)
+    {
+        if (n % primes->data[i] == 0)
+            return false;
+        if (primes->data[i] > criteria)
+            return true;
+    }
+    return true;
+}
+
+int main()
+{
+    int n, m;
+    scanf("%d %d", &m, &n);
+
+    ArrayList *list = newArrayList(8);
+
+    for (int i = 2; i < m; i++)
+    {
+        if (isPrime(list, i))
+            listAppend(list, i);
+    }
+    for (int i = max(2, m); i <= n; i++)
+    {
+        if (isPrime(list, i))
+        {
+            listAppend(list, i);
+            printf("%d\n", i);
+        }
+    }
+
+    freeArrayList(list);
+}
