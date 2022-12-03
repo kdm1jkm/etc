@@ -2,6 +2,30 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+int sumTree(int *tree, int index)
+{
+    int sum = 0;
+    while (index > 0)
+    {
+        sum += tree[index - 1];
+        index -= index & -index;
+    }
+    return sum;
+}
+
+void updateTree(int *tree, int value, int index, int n)
+{
+    while (index <= n)
+    {
+        tree[index - 1] += value;
+        index += (index & -index);
+    }
+}
+
+void calcTree(int *arr, int *tree)
+{
+}
+
 int calcSize(int *arr, int n)
 {
 }
