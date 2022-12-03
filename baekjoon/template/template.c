@@ -287,3 +287,13 @@ const Pos directions[4] = {
     {.row = 0, .column = -1},
     {.row = 1, .column = 0},
 };
+
+//**************************************************************************
+//                                 Main
+
+int main()
+{
+    printf("Hello, World!\n");
+
+    return 0;
+}
