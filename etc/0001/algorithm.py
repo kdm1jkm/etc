@@ -180,23 +180,42 @@ def test():
 
 def main():
     food_count = int(input("Enter the number of food: "))
+    print()
+
     kcal_per_g = [
         int(input(f"Enter calorie(kcal/g) of food #{i+1}: ")) for i in range(food_count)
     ]
+    print()
+
+    nutrient_count = int(input("Enter the number of nutrients: "))
     mg_per_g = [
-        int(input(f"Enter nutrients(mg/g) of food #{i+1}: ")) for i in range(food_count)
+        [
+            int(input(f"Enter {n + 1}th nutrients(mg/g) of food #{i+1}: "))
+            for i in range(food_count)
+        ]
+        for n in range(nutrient_count)
     ]
+    print()
+
     tb_per_g = [int(input(f"Enter tb/g of food #{i+1}: ")) for i in range(food_count)]
+    print()
+
     min_foods = np.array(
         [int(input(f"Enter minimum amount food #{i+1}: ")) for i in range(food_count)]
     )
-    # 각 음식의 최대 양도 입력받고 싶으면 밑의 주석 해제
+    print()
+
     max_foods = np.array(
         [int(input(f"Enter maximum amount food #{i+1}: ")) for i in range(food_count)]
     )
+    print()
 
     kcal_min = int(input("Enter the minimum value of calorie: "))
-    mg_min = int(input("Enter the minimum value of the nutrients: "))
+    mg_min = [
+        int(input(f"Enter the minimum value of the {i + 1}th nutrients: "))
+        for i in range(nutrient_count)
+    ]
+    print()
 
     # 사용자가 설정하게 하고 싶으면 주석 해제
     n = 10
@@ -204,8 +223,8 @@ def main():
     # n = int(input("Enter n(The number of division): "))
     # loop_count = int(input("Enter loop count: "))
 
-    A = np.array([kcal_per_g, mg_per_g, tb_per_g])
-    criteria = np.array([kcal_min, mg_min])
+    A = np.array([kcal_per_g, *mg_per_g, tb_per_g])
+    criteria = np.array([kcal_min, *mg_min])
 
     comb = int(input("Enter the number of foods to be seleted: "))
 
@@ -228,8 +247,9 @@ def main():
             print(f"Food#{index + 1}: {best_vector[i]}")
         best_result = A[:, indexes] @ best_vector  # type: ignore
         print(f"Total calories: {best_result[0]}")
-        print(f"Total nutrients: {best_result[1]}")
-        print(f"Total tb: {best_result[2]}")
+        for i in range(best_result.shape[0] - 2):
+            print(f"Total nutrients #{i + 1}: {best_result[i + 1]}")
+        print(f"Total tb: {best_result[-1]}")
 
 
 if __name__ == "__main__":
