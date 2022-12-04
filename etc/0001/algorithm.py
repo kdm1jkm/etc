@@ -1,44 +1,56 @@
 import numpy as np
 from itertools import product, combinations
+from io import StringIO
 
-# 타입을 명확하게 설정학 위한 것. 실제 코드와는 무관함.
+# 파일에서 읽어오기
+import json
+
+# 타입을 명확하게 설정하기 위한 것. 실제 코드와는 무관함.
 import numpy.typing as npt
 from typing import Optional
 
 ###################################################
 # 입력받을 행렬
-#            | food1 food2 food3 ...
-# -----------+------------------------
-#  calorie/g |
-# nutrient/g |
-#       tb/g |
+#             | 재료1 재료2 재료3 재료4 ...
+# ------------+--------------------------
+#  calorie/g  |
+# nutrient1/g |
+# nutrient2/g |
+# nutrient3/g |
+#     ...     |
+#       tb/g  |
 # = A
 #
 # 최소 조건
-#        _            _
-#       |              |
-# min = | calorie_min  |
-#       | nutrient_min |
-#       |_            _|
+#        _             _
+#       |               |
+#       | calorie_min   |
+#       | nutrient1_min |
+# min = | nutrient2_min |
+#       | nutrient3_min |
+#       |      ...      |
+#       |_             _|
 #
 #      _    _
 #     |      |
 #     |  w1  |
 # w = |  w2  |
-#     |  w3  |
 #     |  ... |
 #     |_    _|
 #
-#       _              _
-#      |                |
-#      | calorie total  |
-# Aw = | notrient total |
-#      | tb total       |
-#      |_              _|
+#       _               _
+#      |                 |
+#      | calorie total   |
+#      | nutrient1 total |
+# Aw = | nutrient2 total |
+#      | nutrient3 total |
+#      | tb total        |
+#      |_               _|
 #
 ###################################################
 
 
+# 주어진 재료 하나만으로 기준치를 달성하기 위해 필요한 양 계산
 def calc_min_quantities(criteria: npt.NDArray, A: npt.NDArray):
     result = []
     for column in range(A.shape[1]):
@@ -46,12 +58,14 @@ def calc_min_quantities(criteria: npt.NDArray, A: npt.NDArray):
     return np.array(result)
 
 
+# 기준에 따라 n등분
 def divide_scalar(start_value: float, end_value: float, n: int):
     interval = (end_value - start_value) / n
     for i in range(n):
         yield start_value + ((0.5 + i) * interval)
 
 
+# 기준에 따라 벡터를 n^(차원) 등분
 def divide_vector(start_vector: npt.NDArray, end_vector: npt.NDArray, n: int):
     return np.column_stack(
         list(
@@ -65,6 +79,7 @@ def divide_vector(start_vector: npt.NDArray, end_vector: npt.NDArray, n: int):
     )
 
 
+# 기준 범위 내에서 n등분한 벡터들 중 최고를 찾기
 def calc_minimum_tb_area(
     A: npt.NDArray,
     start_vector: npt.NDArray,
@@ -80,6 +95,7 @@ def calc_minimum_tb_area(
             return vectors[:, index]
 
 
+# 기준 범위를 자동 설정, 일정 횟수 반복
 def calc_best(
     A: npt.NDArray,
     criteria: npt.NDArray,
@@ -96,6 +112,7 @@ def calc_best(
     min_vector = np.maximum(np.zeros((A.shape[1])), min_vector)
     max_vector = np.minimum(calc_min_quantities(criteria, A), max_vector)
 
+    # 이미 최소 양만으로 충족
     if np.any(max_vector < min_vector):
         return min_vector
 
@@ -107,78 +124,17 @@ def calc_best(
         block_size = (endVector - startVector) / n
         min_local = calc_minimum_tb_area(A, startVector, endVector, criteria, n)
 
+        print(f"\r[{i:03d}] {min_local=}, {block_size=}", end="")
+
         if min_local is None:
             break
-
         startVector = np.maximum(min_local - block_size * 1.5, min_vector)
         endVector = np.minimum(min_local + block_size * 1.5, max_vector)
-        print(f"\r[{i:03d}] {min_local=}, {block_size=}", end="")
-    print()
+    # print()
     return min_local
 
 
-def test_min_quantity():
-    a = calc_min_quantities(
-        np.array([800, 600]), np.array([[10, 15, 20], [15, 10, 20], [100, 150, 170]])
-    )
-    print(a)
-
-
-def test_divide():
-    print(*divide_vector(np.array([1, 1, 2]), np.array([3, 3, 4]), 2))
-
-
-def test_minimum_tb():
-    A = np.array([[10, 15, 20], [15, 10, 20], [100, 150, 200]])
-    criteria = np.array([800, 600])
-    print(
-        calc_minimum_tb_area(
-            A, np.array([0, 0, 0]), calc_min_quantities(criteria, A), criteria, 10
-        )
-    )
-
-
-def test_minimum_tb2():
-    A = np.array([[10, 15], [15, 10], [100, 150]])
-    criteria = np.array([100, 100])
-    print(
-        calc_minimum_tb_area(
-            A, np.array([0, 0]), calc_min_quantities(criteria, A), criteria, 10
-        )
-    )
-
-
-def test_calc_best():
-    A = np.array([[10, 15], [15, 10], [100, 150]])
-    criteria = np.array([800, 600])
-    best = calc_best(A, criteria, 100, 100)
-    print(f"{best=}")
-    print(f"{A @ best=}")
-
-
-def test():
-    print("-" * 50)
-    print("MINIMUM_QUANTITY")
-    test_min_quantity()
-
-    print("-" * 50)
-    print("DIVIDE")
-    test_divide()
-
-    print("-" * 50)
-    print("MINIMUM_TB")
-    test_minimum_tb()
-
-    print("-" * 50)
-    print("MINIMUM_TB2")
-    test_minimum_tb2()
-
-    print("-" * 50)
-    print("CALC_BEST")
-    test_calc_best()
-
-
-def main():
+def read_from_input():
     food_count = int(input("Enter the number of food: "))
     print()
 
@@ -250,6 +206,61 @@ def main():
         for i in range(best_result.shape[0] - 2):
             print(f"Total nutrients #{i + 1}: {best_result[i + 1]}")
         print(f"Total tb: {best_result[-1]}")
+
+
+def main():
+    filename = input("Enter file name: ")
+    with open(filename, "r") as f:
+        data: dict = json.load(f)
+        ingridients = []
+        A = []
+        min_ingridient_amount = []
+        max_ingridient_amount = []
+        for k, v in data["ingridients"].items():
+            ingridients.append(k)
+            A.append([v["calorie"], *v["nutrients"], v["tb"]])
+            min_ingridient_amount.append(v["minimum"])
+            max_ingridient_amount.append(v["maximum"])
+
+        A = np.column_stack(A)
+        min_ingridient_amount = np.array(min_ingridient_amount)
+        max_ingridient_amount = np.array(max_ingridient_amount)
+
+        criteria = np.array(
+            [data["criteria"]["calorie"], *data["criteria"]["nutrients"]]
+        )
+        comb = data["settings"]["number_of_selection"]
+        n = data["settings"]["vector_divide"]
+        loop_count = data["settings"]["loop_count"]
+
+        s = StringIO()
+
+        for indexes in combinations(range(len(ingridients)), comb):
+            result = calc_best(
+                A[:, indexes],  # type: ignore
+                criteria,
+                n,
+                loop_count,
+                min_ingridient_amount.take(indexes),
+                max_ingridient_amount.take(indexes),
+            )
+            if result is None:
+                continue
+
+            print("-" * 50, file=s)
+            for i, index in enumerate(indexes):
+                print(f"{ingridients[index]}: {result[i]}", file=s)
+            calced_result = A[:, indexes] @ result  # type: ignore
+            print(f"Total calories: {calced_result[0]}", file=s)
+            for i in range(calced_result.shape[0] - 2):
+                print(f"Total nutrients #{i + 1}: {calced_result[i + 1]}", file=s)
+            print(f"Total tb: {calced_result[-1]}", file=s)
+
+        print()
+        result = s.getvalue()
+        print(result)
+        with open("result.txt", "w") as fw:
+            print(result, file=fw)
 
 
 if __name__ == "__main__":
