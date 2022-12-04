@@ -93,13 +93,11 @@ def calc_best(
     if max_vector is None:
         max_vector = calc_min_quantities(criteria, A)
 
-    original = min_vector.copy(), max_vector.copy()
-
     min_vector = np.maximum(np.zeros((A.shape[1])), min_vector)
     max_vector = np.minimum(calc_min_quantities(criteria, A), max_vector)
 
     if np.any(max_vector < min_vector):
-        max_vector = np.maximum(min_vector, max_vector)
+        return min_vector
 
     startVector = min_vector.copy()
     endVector = max_vector.copy()
