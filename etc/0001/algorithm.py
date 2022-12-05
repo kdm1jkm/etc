@@ -2,7 +2,6 @@ import numpy as np
 from itertools import product, combinations
 from io import StringIO
 import openpyxl
-import os
 
 # 파일에서 읽어오기
 import json
@@ -269,7 +268,7 @@ def main():
     wb = openpyxl.Workbook()
     ws = wb.active
     for i, tb in enumerate(tb_list):
-        ws.cell(i + 1, 1, tb)  # type: ignore
+        ws.cell(i + 1, 1, tb)
     wb.save("./results.xlsx")
 
 
