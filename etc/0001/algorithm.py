@@ -1,6 +1,8 @@
 import numpy as np
 from itertools import product, combinations
 from io import StringIO
+import openpyxl
+import os
 
 # 파일에서 읽어오기
 import json
@@ -210,6 +212,7 @@ def read_from_input():
 
 def main():
     filename = input("Enter file name: ")
+    tb_list = []
     with open(filename, "r") as f:
         data: dict = json.load(f)
         ingridients = []
@@ -255,12 +258,19 @@ def main():
             for i in range(calced_result.shape[0] - 2):
                 print(f"Total nutrients #{i + 1}: {calced_result[i + 1]}", file=s)
             print(f"Total tb: {calced_result[-1]}", file=s)
+            tb_list.append(calced_result[-1])
 
         print()
         result = s.getvalue()
         print(result)
-        with open("result.txt", "w") as fw:
+        with open("lastResult.txt", "w") as fw:
             print(result, file=fw)
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    for i, tb in enumerate(tb_list):
+        ws.cell(i + 1, 1, tb)  # type: ignore
+    wb.save("./results.xlsx")
 
 
 if __name__ == "__main__":
