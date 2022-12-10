@@ -1,8 +1,16 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+typedef struct _info
+{
+    int time, subin, sister;
+} Info;
+
 //******************************** Queue ***********************************
 
 #include <stdlib.h>
 
-typedef int QUEUE_TYPE;
+typedef Info QUEUE_TYPE;
 
 typedef struct _node
 {
@@ -77,4 +85,44 @@ void freeQueue(Queue *queue)
 {
     emptyQueue(queue);
     free(queue);
+}
+
+int subinNext(int subin, int i)
+{
+    switch (i)
+    {
+    case 0:
+        return subin * 2;
+    case 1:
+        return subin - 1;
+    case 2:
+        return subin + 1;
+    }
+}
+
+int main()
+{
+    int subin, sister;
+    scanf("%d %d", &subin, &sister);
+
+    Queue *queue = newQueue();
+    enqueue(queue, (Info){0, subin, sister});
+
+    while (true)
+    {
+        Info info = dequeue(queue);
+
+        info.time++;
+        info.sister += info.time;
+
+        if (info.sister > 500000)
+            continue;
+
+        for (int i = 0; i < 3; i++)
+        {
+            info.subin = subinNext(info.subin, i);
+            if (info.subin < 0 || info.subin > 500000)
+                continue;
+        }
+    }
 }
