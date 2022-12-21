@@ -43,6 +43,8 @@ def initialize(timestamp):
     w.data.added_time = 0
     w.data.score = 0.0
     w.data.prev_clicked = False
+    w.data.prev_stop = False
+    w.data.stop_stamp = timestamp
 
     # state
     # 0 -> 게임 진행
@@ -150,8 +152,12 @@ def update(timestamp):
         w.data.score = 314159265358979
         w.data.state = 1
 
-    if w.keys["s"]:
-        t = 3
+    stop = w.keys["s"]
+    if w.data.prev_stop:
+        w.data.added_time += timestamp - w.data.stop_stamp
+    if stop:
+        w.data.stop_stamp = timestamp
+    w.data.prev_stop = stop
 
     if w.data.state == 0:
         left_time = GAME_PERIOD + w.data.added_time - (timestamp - w.data.start_stamp)
@@ -161,7 +167,7 @@ def update(timestamp):
             w.data.state = 1
 
         # 도형 생성할 시간
-        if timestamp - w.data.last_stamp >= w.data.t:
+        if not stop and timestamp - w.data.last_stamp >= w.data.t:
             w.data.t = random.random()
             x, y = get_not_collapsed_pos()
 
@@ -172,32 +178,41 @@ def update(timestamp):
                 w.data.circles.append(w.newOval(x, y, 1, 1))
             w.data.last_stamp = timestamp
 
-        for rectangle in w.data.rectangles:
-            width, height = w.getSize(rectangle)
-            x, y = w.getPosition(rectangle)
-            w.resizeObject(rectangle, width + INCREASE_SPEED, height + INCREASE_SPEED)
-            w.moveObject(rectangle, x - INCREASE_SPEED / 2, y - INCREASE_SPEED / 2)
+        if not stop:
+            for rectangle in w.data.rectangles:
+                width, height = w.getSize(rectangle)
+                x, y = w.getPosition(rectangle)
+                w.resizeObject(
+                    rectangle, width + INCREASE_SPEED, height + INCREASE_SPEED
+                )
+                w.moveObject(rectangle, x - INCREASE_SPEED / 2, y - INCREASE_SPEED / 2)
 
-        for circle in w.data.circles:
-            width, height = w.getSize(circle)
-            x, y = w.getPosition(circle)
-            w.resizeObject(circle, width + INCREASE_SPEED, height + INCREASE_SPEED)
-            w.moveObject(circle, x - INCREASE_SPEED / 2, y - INCREASE_SPEED / 2)
+            for circle in w.data.circles:
+                width, height = w.getSize(circle)
+                x, y = w.getPosition(circle)
+                w.resizeObject(circle, width + INCREASE_SPEED, height + INCREASE_SPEED)
+                w.moveObject(circle, x - INCREASE_SPEED / 2, y - INCREASE_SPEED / 2)
 
-        for rectangle1, rectangle2 in combinations(w.data.rectangles, 2):
-            if is_rectangle_collide(rectangle1, rectangle2):
-                w.data.state = 1
+            for rectangle1, rectangle2 in combinations(w.data.rectangles, 2):
+                if is_rectangle_collide(rectangle1, rectangle2):
+                    w.recolorObject(rectangle1, "red")
+                    w.recolorObject(rectangle2, "red")
+                    w.data.state = 1
 
-        for circle1, circle2 in combinations(w.data.circles, 2):
-            if is_circle_collide(circle1, circle2):
-                w.data.state = 1
+            for circle1, circle2 in combinations(w.data.circles, 2):
+                if is_circle_collide(circle1, circle2):
+                    w.recolorObject(circle1, "red")
+                    w.recolorObject(circle2, "red")
+                    w.data.state = 1
 
-        for rectangle, circle in product(w.data.rectangles, w.data.circles):
-            if is_rectangle_circle_collide(rectangle, circle):
-                w.data.state = 1
+            for rectangle, circle in product(w.data.rectangles, w.data.circles):
+                if is_rectangle_circle_collide(rectangle, circle):
+                    w.recolorObject(rectangle, "red")
+                    w.recolorObject(circle, "red")
+                    w.data.state = 1
 
         clicked = w.mouse_buttons[1]
-        if not w.data.prev_clicked and clicked:
+        if not stop and not w.data.prev_clicked and clicked:
             delete_rectangles = []
             mouse_pos = (w.mouse_position_x, w.mouse_position_y)
             for rectangle in w.data.rectangles:
@@ -225,7 +240,7 @@ def update(timestamp):
                 w.data.circles.remove(circle)
         w.data.prev_clicked = clicked
 
-        if w.mouse_buttons[3]:
+        if not stop and w.mouse_buttons[3]:
             for rectangle in w.data.rectangles:
                 if is_in_rectangle((w.mouse_position_x, w.mouse_position_y), rectangle):
                     width, height = w.getSize(rectangle)
