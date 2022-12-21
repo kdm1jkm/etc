@@ -148,18 +148,18 @@ def update(timestamp):
         w.stop()
         return
 
-    if w.keys["w"]:
-        w.data.score = 314159265358979
-        w.data.state = 1
-
-    stop = w.keys["s"]
-    if w.data.prev_stop:
-        w.data.added_time += timestamp - w.data.stop_stamp
-    if stop:
-        w.data.stop_stamp = timestamp
-    w.data.prev_stop = stop
-
     if w.data.state == 0:
+        stop = w.keys["s"]
+        if w.data.prev_stop:
+            w.data.added_time += timestamp - w.data.stop_stamp
+        if stop:
+            w.data.stop_stamp = timestamp
+        w.data.prev_stop = stop
+
+        if w.keys["w"]:
+            w.data.score = 314159265358979
+            w.data.state = 1
+
         left_time = GAME_PERIOD + w.data.added_time - (timestamp - w.data.start_stamp)
         w.setTitle(f"남은 시간: {left_time:.05f}, 점수: {w.data.score: .03f}")
 
