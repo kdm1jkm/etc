@@ -4,8 +4,12 @@
       "type": "shell",
       "label": "compile debug C",
       "command": "gcc ${file} -o ${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out -Wall -std=c99 -lm -g",
-      "problemMatcher": ["$gcc"],
-      "dependsOn": ["makedir"],
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "dependsOn": [
+        "makedir"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -15,8 +19,12 @@
       "type": "shell",
       "label": "compile debug C++",
       "command": "g++ ${file} -o ${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out -Wall -std=c++17 -lm -g",
-      "problemMatcher": ["$gcc"],
-      "dependsOn": ["makedir"],
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "dependsOn": [
+        "makedir"
+      ],
       "group": {
         "kind": "build",
         "isDefault": false
@@ -30,7 +38,7 @@
     {
       "type": "shell",
       "label": "makedir",
-      "command": "if [ ! -d ${workspaceFolder}/executables/${relativeFileDirname} ]; then mkdir -p ${workspaceFolder}/executables/${relativeFileDirname}; fi",
+      "command": "mkdir ${workspaceFolder}/executables/${relativeFileDirname}",
       "hide": true
     }
   ],
