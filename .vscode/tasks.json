@@ -27,7 +27,16 @@
     {
       "type": "shell",
       "label": "compile debug C++",
-      "command": "g++ ${file} -o ${workspaceFolder}\\executables\\${relativeFileDirname}\\${fileBasenameNoExtension}.out -Wall -std=c++17 -lm -g",
+      "command": "g++",
+      "args": [
+        "${file}",
+        "-o",
+        "${workspaceFolder}\\executables\\${relativeFileDirname}\\${fileBasenameNoExtension}.out",
+        "-Wall",
+        "-std=c++17",
+        "-lm",
+        "-g",
+      ],
       "problemMatcher": [
         "$gcc"
       ],
@@ -47,7 +56,11 @@
     {
       "type": "shell",
       "label": "makedir",
-      "command": "mkdir ${workspaceFolder}\\executables\\${relativeFileDirname}",
+      "command": "mkdir",
+      "args": [
+        "${workspaceFolder}\\executables\\${relativeFileDirname}",
+        "-Force"
+      ],
       "hide": true
     }
   ],
@@ -55,12 +68,13 @@
   "windows": {
     "options": {
       "shell": {
-        "executable": "cmd.exe",
+        "executable": "powershell.exe",
         "args": [
-          "/d",
-          "/c"
+          "-NoLogo",
+          "-NoProfile",
+          "-Command"
         ]
       }
     }
-  },
+  }
 }
