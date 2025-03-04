@@ -3,7 +3,16 @@
     {
       "type": "shell",
       "label": "compile debug C",
-      "command": "gcc ${file} -o ${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out -Wall -std=c99 -lm -g",
+      "command": "gcc",
+      "args": [
+        "${file}",
+        "-o",
+        "${workspaceFolder}\\executables\\${relativeFileDirname}\\${fileBasenameNoExtension}.out",
+        "-Wall",
+        "-std=c99",
+        "-lm",
+        "-g",
+      ],
       "problemMatcher": [
         "$gcc"
       ],
@@ -18,7 +27,7 @@
     {
       "type": "shell",
       "label": "compile debug C++",
-      "command": "g++ ${file} -o ${workspaceFolder}/executables/${relativeFileDirname}/${fileBasenameNoExtension}.out -Wall -std=c++17 -lm -g",
+      "command": "g++ ${file} -o ${workspaceFolder}\\executables\\${relativeFileDirname}\\${fileBasenameNoExtension}.out -Wall -std=c++17 -lm -g",
       "problemMatcher": [
         "$gcc"
       ],
@@ -33,14 +42,25 @@
     {
       "type": "shell",
       "label": "clean",
-      "command": "rm ${workspaceFolder}/executables"
+      "command": "rm ${workspaceFolder}\\executables"
     },
     {
       "type": "shell",
       "label": "makedir",
-      "command": "mkdir ${workspaceFolder}/executables/${relativeFileDirname}",
+      "command": "mkdir ${workspaceFolder}\\executables\\${relativeFileDirname}",
       "hide": true
     }
   ],
-  "version": "2.0.0"
+  "version": "2.0.0",
+  "windows": {
+    "options": {
+      "shell": {
+        "executable": "cmd.exe",
+        "args": [
+          "/d",
+          "/c"
+        ]
+      }
+    }
+  },
 }
