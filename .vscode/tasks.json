@@ -7,7 +7,7 @@
       "args": [
         "${file}",
         "-o",
-        "${workspaceFolder}\\a.exe",
+        "${fileDirname}\\a.exe",
         "-Wall",
         "-std=c99",
         "-lm",
@@ -32,7 +32,7 @@
       "args": [
         "${file}",
         "-o",
-        "${workspaceFolder}\\a.exe",
+        "${fileDirname}\\a.exe",
         "-Wall",
         "-std=c++17",
         "-lm",
