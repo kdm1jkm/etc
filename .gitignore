@@ -1,6 +1,4 @@
-executables
 venv
 __pycache__
 .vscode/settings.json
 *.exe
-*.out
