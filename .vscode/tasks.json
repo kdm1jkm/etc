@@ -7,11 +7,12 @@
       "args": [
         "${file}",
         "-o",
-        "${workspaceFolder}\\executables\\${relativeFileDirname}\\${fileBasenameNoExtension}.out",
+        "${workspaceFolder}\\a.exe",
         "-Wall",
         "-std=c99",
         "-lm",
         "-g",
+        "-m64"
       ],
       "problemMatcher": [
         "$gcc"
@@ -31,37 +32,19 @@
       "args": [
         "${file}",
         "-o",
-        "${workspaceFolder}\\executables\\${relativeFileDirname}\\${fileBasenameNoExtension}.out",
+        "${workspaceFolder}\\a.exe",
         "-Wall",
         "-std=c++17",
         "-lm",
-        "-g",
+        "-g"
       ],
       "problemMatcher": [
         "$gcc"
-      ],
-      "dependsOn": [
-        "makedir"
       ],
       "group": {
         "kind": "build",
         "isDefault": false
       }
-    },
-    {
-      "type": "shell",
-      "label": "clean",
-      "command": "rm ${workspaceFolder}\\executables"
-    },
-    {
-      "type": "shell",
-      "label": "makedir",
-      "command": "mkdir",
-      "args": [
-        "${workspaceFolder}\\executables\\${relativeFileDirname}",
-        "-Force"
-      ],
-      "hide": true
     }
   ],
   "version": "2.0.0",
